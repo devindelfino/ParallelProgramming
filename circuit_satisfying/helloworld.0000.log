@@ -1,0 +1,3 @@
+Running helloworld with 2 processors.
+This is the log for processor 0.
+Message: "HELLO FROM THE MASTER PROCESS!"
