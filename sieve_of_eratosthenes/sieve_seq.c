@@ -13,19 +13,19 @@ int main(int argc, char* argv[]) {
 		// printf("%d\n",atoi(argv[1]));
 	}
 	
-	int prime_list[upper_bound+1];
+	int prime_list[upper_bound-1];
 	memset(prime_list, 0, sizeof(prime_list));
 
 	int current = 2;
 	int current_squared = 4;
 	while(current_squared <= upper_bound) {
-		for(int mark = current_squared; mark < upper_bound+1; mark += current) {
+		for(int mark = current_squared-2; mark < upper_bound-1; mark += current) {
 			prime_list[mark] = 1;
 		}
 
-		for(int it = current+1; current < upper_bound+1; it++) {
+		for(int it = current-2+1; current < upper_bound-1; it++) {
 			if(prime_list[it] == 0) {
-				current = it;
+				current = it+2;
 				break;
 			}
 		}
@@ -33,9 +33,9 @@ int main(int argc, char* argv[]) {
 	}
 
 	printf("Prime Numbers up to %d:\n", upper_bound);
-	for(int prime=2; prime < upper_bound+1; prime++){
-		if(prime_list[prime] == 0) {
-			printf("%d\n", prime);
+	for(int it=0; it < upper_bound-1; it++){
+		if(prime_list[it] == 0) {
+			printf("%d\n", it+2);
 		}	
 	}
 	return 1;

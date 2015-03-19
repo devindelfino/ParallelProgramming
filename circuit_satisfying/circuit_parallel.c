@@ -20,7 +20,7 @@ int main (int argc, char *argv[]) {
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &id);	// determine the rank within a communicator
 	MPI_Comm_size(MPI_COMM_WORLD, &p);	// determine the total number of processes in a communicator
-
+	printf("processes: %d\n", p);
 	MPI_Barrier(MPI_COMM_WORLD);
 	elapsed_time = MPI_Wtime();
 
