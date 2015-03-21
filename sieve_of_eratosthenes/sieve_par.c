@@ -66,7 +66,8 @@ int main(int argc, char* argv[]) {
 		MPI_Finalize();
 		exit(1);
 	}
-	for(int i=0; i < size; i++) {
+	int i;
+	for(i=0; i < size; i++) {
 		block[i] = 0;
 	}
 
@@ -79,8 +80,9 @@ int main(int argc, char* argv[]) {
 	// 3a. Mark all multiples of k between k^2 and n
 
 	// Repeat until k^2 > n
-	int multiple;
-	int rem;
+	int multiple;	// the local index indicating the first multiple of the current prime in the block
+	int rem;		// the remainder of first % current_prime
+	int mark, it;   // iterators
 	while(current_squared <= range+1) {
 		// iterate through the block
 		rem = first % current_prime;
@@ -97,12 +99,13 @@ int main(int argc, char* argv[]) {
 		}
 
 		// set the first mark to the first multiple of the current prime and increase by the current prime
-		for(int mark = multiple; mark < size; mark += current_prime) {
+		
+		for(mark = multiple; mark < size; mark += current_prime) {
 			block[mark] = 1;
 		}
 
 		if(rank == 0) {
-			for(int it = current_prime-2+1; it < size; it++) {
+			for(it = current_prime-2+1; it < size; it++) {
 				if(block[it] == 0) {
 					current_prime = it + 2;
 					break;
@@ -116,7 +119,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	local_prime_count = 0;
-	for(int it = 0; it < size; it++) {
+	for(it = 0; it < size; it++) {
 		if(block[it] == 0 ) {
 			local_prime_count++;
 			// printf("(%d) %d\n", rank, first + it);
@@ -142,17 +145,33 @@ int main(int argc, char* argv[]) {
 
 // ------ Helper Functions ------------------------------------------
 int get_block_lowest(int rank, int procs, int range) {
+// Merges the LinkedList so no two roots have the same rank
+// Used to merge the root_list of a BinomialHeap class
+// 	 Parameters: None
+//   Returns: None
 	return (rank * range)/ procs;
 }
 
 int get_block_highest(int rank, int procs, int range) {
+// Merges the LinkedList so no two roots have the same rank
+// Used to merge the root_list of a BinomialHeap class
+// 	 Parameters: None
+//   Returns: None
 	return (((rank + 1) * range) / procs) - 1;
 }
 
 int get_block_size(int rank, int procs, int range) {
+// Merges the LinkedList so no two roots have the same rank
+// Used to merge the root_list of a BinomialHeap class
+// 	 Parameters: None
+//   Returns: None
 	return get_block_highest(rank,procs,range) - get_block_lowest(rank,procs,range) + 1;
 }
 
 int get_block_owner(int ind, int procs, int range) {
+// Merges the LinkedList so no two roots have the same rank
+// Used to merge the root_list of a BinomialHeap class
+// 	 Parameters: None
+//   Returns: None
 	return (procs * (ind + 1) - 1) / range;
 }

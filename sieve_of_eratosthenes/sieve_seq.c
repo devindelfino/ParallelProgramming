@@ -1,4 +1,12 @@
-// sieve_seq.c
+/*
+ * Project: COMP 401 - Project03
+ *
+ * Author: Devin Delfino
+ *
+ * File Name: sieve_seq.c
+ *
+ * File Contents:  
+ */
 
 #include <stdio.h>
 #include <string.h>
