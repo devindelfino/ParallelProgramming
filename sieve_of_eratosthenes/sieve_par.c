@@ -5,7 +5,8 @@
  *
  * File Name: sieve_par.c
  *
- * File Contents:  
+ * File Contents: Implementation of a parallel algorithm for the Sieve of Eratosthenes using MPI for the
+ *                message passing system. This is a direct parallelized version of the sequential algorithm.         
  */
 
 #include <mpi.h>
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
 	int get_block_lowest(int,int,int);
 	int get_block_highest(int,int,int);
 	int get_block_size(int,int,int);
-	int get_block_owner(int,int,int);
+	// int get_block_owner(int,int,int);
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);		// determines the rank of the current process of the communicator
 	MPI_Comm_size(MPI_COMM_WORLD, &procs);		// determine the total number of processes in the communicator
@@ -145,33 +146,32 @@ int main(int argc, char* argv[]) {
 
 // ------ Helper Functions ------------------------------------------
 int get_block_lowest(int rank, int procs, int range) {
-// Merges the LinkedList so no two roots have the same rank
-// Used to merge the root_list of a BinomialHeap class
-// 	 Parameters: None
-//   Returns: None
+// Gets the integer that is represented by the first (lowest) index of the block with ID 'rank'
+// 	 Parameters: rank - an integer representing the rank of the process
+//               procs - an integer representing the number of processes
+//               range - an integer representing the maximum number of the sieve
+//   Returns: integer that is represented by the lowest index of the block
 	return (rank * range)/ procs;
 }
 
 int get_block_highest(int rank, int procs, int range) {
-// Merges the LinkedList so no two roots have the same rank
-// Used to merge the root_list of a BinomialHeap class
-// 	 Parameters: None
-//   Returns: None
+// Gets the integer that is represented by the last (highest) index of the block with ID 'rank'
+// 	 Parameters: rank - an integer representing the rank of the process
+//               procs - an integer representing the number of processes
+//               range - an integer representing the maximum number of the sieve
+//   Returns: integer that is represented by the highest index of the block
 	return (((rank + 1) * range) / procs) - 1;
 }
 
 int get_block_size(int rank, int procs, int range) {
-// Merges the LinkedList so no two roots have the same rank
-// Used to merge the root_list of a BinomialHeap class
-// 	 Parameters: None
-//   Returns: None
+// Gets the size of the block with ID 'rank'
+// 	 Parameters: rank - an integer representing the rank of the process
+//               procs - an integer representing the number of processes
+//               range - an integer representing the maximum number of the sieve
+//   Returns: integer that is represented by the lowest index of the block
 	return get_block_highest(rank,procs,range) - get_block_lowest(rank,procs,range) + 1;
 }
 
-int get_block_owner(int ind, int procs, int range) {
-// Merges the LinkedList so no two roots have the same rank
-// Used to merge the root_list of a BinomialHeap class
-// 	 Parameters: None
-//   Returns: None
-	return (procs * (ind + 1) - 1) / range;
-}
+// int get_block_owner(int ind, int procs, int range) {
+// 	return (procs * (ind + 1) - 1) / range;
+// }

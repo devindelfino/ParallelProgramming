@@ -5,7 +5,7 @@
  *
  * File Name: sieve_seq.c
  *
- * File Contents:  
+ * File Contents: Implementation of the sequential algorithm for the Sieve of Eratosthenes.
  */
 
 #include <stdio.h>
