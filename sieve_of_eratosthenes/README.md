@@ -4,19 +4,67 @@ Project 03: The Sieve of Eratosthenes
 
 Description
 -----------
+[The Sieve of Eratosthenes](http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes) is an algorithm that computes all of the prime number up to and including a given limit. This is accomplished by marking every multiple of each prime (starting with 2) as composite. For each prime *p*, the algorithm marks each multiple of *p* starting with *p^2*, and then does the same for each succesive *p* until *p^2* is greater than the given limit.
 
+The parallel algorithm uses a Block Decomposition scheme to break the large of number between 2 and the maximum limit into contiguous blocks, where each block is handled by a particular process. This parallel program uses the [Message Passing Interface (MPI)](http://en.wikipedia.org/wiki/Message_Passing_Interface) system to handle the parallel aspects of the program.
 
 Documentation
 -------------
 
-#####Usage
-installing mpi with link
+#####Installing Dependencies
+In order to compile code using MPI, you must do the following:
 
-#####Functionality
+1. [Download](http://www.open-mpi.org/software/ompi/v1.8/) Open MPI
+2. [Install](https://wiki.helsinki.fi/display/HUGG/Installing+Open+MPI+on+Mac+OS+X) Open MPI (the link is for Mac OS X)
 
 
-#####Running the program
+#####Running the Sequential Program
 
+To compile code...
+
+	make sequential_sieve
+
+To run executable with no parameters...
+		     
+	./sequential_sieve
+
+*Defaults to:*
+*Maximum number of the sieve = 100 (finds primes between 2 and 100, inclusive)*
+
+To run executable with parameters...
+		     
+	./sequential_sieve N
+
+*Maximum number of the sieve = **N** (finds primes between 2 and n, inclusive)*
+
+To remove all executable files (required before recompiling code after changes are made)
+
+	make clean
+
+#####Running the Parallel Program
+
+To compile code...
+
+	make parallel_sieve
+
+To run executable with no parameters...
+
+	mpirun parallel_sieve 
+
+*Defaults to:*
+*Number of processes = Number of CPU cores*
+*Maximum number of the sieve = 100 (finds primes between 2 and 100)*
+
+To run executable with parameters...
+		     
+	mpirun -np P parallel_sieve N
+
+*Number of processes = **P***
+*Maximum number of the sieve = **N** (finds primes between 2 and n, inclusive)*
+
+To remove all of the executable files (required before recompiling code after changes are made)
+
+	make clean
 
 Complexity Analysis
 -------------------
@@ -26,6 +74,8 @@ Contents
 --------
 The *sieve_of_eratosthenes* directory of the *ParallelProgramming* repository contains the following files:
 
+* *sieve_seq.c* - A sequential implementation of the sieve of eratosthenes algorithm
+* *sieve_par.c* - A parallel implementation of the sieve of eratosthenes algorithm
 
 References
 ----------
