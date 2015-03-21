@@ -32,18 +32,20 @@ int main(int argc, char* argv[]) {
 		printf("Cannot allocate enough memory.\n");
 		exit(1);
 	}
-	for(int i=0; i < upper_bound-1; i++) {
+	int i;
+	for(i=0; i < upper_bound-1; i++) {
 		prime_list[i] = 0;
 	}
 
 	int current_prime = 2;
 	int current_squared = 4;
+	int mark, it;
 	while(current_squared <= upper_bound) {
-		for(int mark = current_squared-2; mark < upper_bound-1; mark += current_prime) {
+		for(mark = current_squared-2; mark < upper_bound-1; mark += current_prime) {
 			prime_list[mark] = 1;
 		}
 
-		for(int it = current_prime-2+1; current_prime < upper_bound-1; it++) {
+		for(it = current_prime-2+1; current_prime < upper_bound-1; it++) {
 			if(prime_list[it] == 0) {
 				current_prime = it+2;
 				break;
@@ -53,7 +55,7 @@ int main(int argc, char* argv[]) {
 	}
 
 	printf("Prime Numbers up to %d:\n", upper_bound);
-	for(int it=0; it < upper_bound-1; it++){
+	for(it=0; it < upper_bound-1; it++){
 		if(prime_list[it] == 0) {
 			prime_count++;
 			// printf("%d\n", it+2);

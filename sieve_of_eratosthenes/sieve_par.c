@@ -85,17 +85,17 @@ int main(int argc, char* argv[]) {
 	int mark, it;   // iterators
 	while(current_squared <= range+1) {
 		// iterate through the block
-		rem = first % current_prime;
-		if(rem == 0) {
-			multiple = 0;
+		if(current_squared <= first) { // k^2 already occurred, so we just mark the first multiple of the current prime
+			rem = first % current_prime;
+			if(rem == 0) {
+				multiple = 0;
+			}
+			else { // rem > 0
+				multiple = current_prime - rem;
+			}
 		}
-		else { // rem > 0
-			// actual number = first + rem;
-			multiple = current_prime - rem;
-		}
-
-		if(current_prime == (first + multiple)) {
-			multiple += current_prime;
+		else { // current_squared > first, meaning we start marking at k^2
+			multiple = current_squared - first;
 		}
 
 		// set the first mark to the first multiple of the current prime and increase by the current prime
