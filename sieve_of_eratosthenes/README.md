@@ -35,7 +35,7 @@ To run executable with parameters...
 		     
 	./sequential_sieve N
 
-*Maximum number of the sieve = **N** (finds primes between 2 and n, inclusive)*
+*Maximum number of the sieve = __N__ (finds primes between 2 and n, inclusive)*
 
 To remove all executable files (required before recompiling code after changes are made)
 
@@ -59,8 +59,8 @@ To run executable with parameters...
 		     
 	mpirun -np P parallel_sieve N
 
-*Number of processes = **P***
-*Maximum number of the sieve = **N** (finds primes between 2 and n, inclusive)*
+*Number of processes = __P__*
+*Maximum number of the sieve = __N__ (finds primes between 2 and n, inclusive)*
 
 To remove all of the executable files (required before recompiling code after changes are made)
 
