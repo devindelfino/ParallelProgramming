@@ -68,6 +68,10 @@ To remove all of the executable files (required before recompiling code after ch
 
 Complexity Analysis
 -------------------
+__Sequential Algorithm__
+
+
+__Parallel Algorithm__
 
 
 Contents

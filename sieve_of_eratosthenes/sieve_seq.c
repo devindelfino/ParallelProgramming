@@ -15,8 +15,8 @@
 
 
 int main(int argc, char* argv[]) {
-	int upper_bound = 100;
-	int prime_count = 0;
+	long upper_bound = 100;
+	long prime_count = 0;
 	clock_t start, stop;
  
 	if(argc > 1) {
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 		printf("Cannot allocate enough memory.\n");
 		exit(1);
 	}
-	int i;
+	long i;
 	for(i=0; i < upper_bound-1; i++) {
 		prime_list[i] = 0;
 	}
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
 		current_squared = current_prime * current_prime;
 	}
 
-	printf("Prime Numbers up to %d:\n", upper_bound);
+	printf("Prime Numbers up to %ld:\n", upper_bound);
 	for(it=0; it < upper_bound-1; it++){
 		if(prime_list[it] == 0) {
 			prime_count++;
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
 	stop = clock();
 
 
-	printf("Total primes between 2 and %d: %d\n", upper_bound, prime_count);
+	printf("Total primes between 2 and %ld: %ld\n", upper_bound, prime_count);
 	printf("Time Elapsed: %f seconds\n\n", (double) (stop - start) / CLOCKS_PER_SEC);
 
 	return 1;

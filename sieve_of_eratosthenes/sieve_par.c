@@ -18,10 +18,10 @@
 int main(int argc, char* argv[]) {
 	int procs;		// the number of processes
 	int rank;		// the rank of a given process
-	int range = 100;		// the upper bound of the range to find primes (2 to range)
+	long range = 100;		// the upper bound of the range to find primes (2 to range)
 	double elapsed_time;
 	int local_prime_count;
-	int global_prime_count = 0;
+	long global_prime_count = 0;
 
 	MPI_Init(&argc, &argv);		// Initialize MPI, breaks into child processes -----------------------------------
 
@@ -30,10 +30,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	// declare helper functions so they are accessible by each process
-	int get_block_lowest(int,int,int);
-	int get_block_highest(int,int,int);
-	int get_block_size(int,int,int);
-	// int get_block_owner(int,int,int);
+	long get_block_lowest(int,int,long);
+	long get_block_highest(int,int,long);
+	long get_block_size(int,int,long);
+	// long get_block_owner(int,int,long);
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);		// determines the rank of the current process of the communicator
 	MPI_Comm_size(MPI_COMM_WORLD, &procs);		// determine the total number of processes in the communicator
@@ -42,20 +42,21 @@ int main(int argc, char* argv[]) {
 	elapsed_time = MPI_Wtime();
 
 	// checks for too many processes - this will result in a higher need for communication, decreasing efficiency
-	if(rank == 0) {	
-		int proc0_size = (range - 1)/procs;	// size of the 0th process
-		if( (proc0_size + 1) < (int) sqrt( (double) range)) {
-			printf("There are currently %d processes.\n If n = %d, there must be less than %d processes in order to minimize communication.", procs, range, (int)sqrt((double)range));
-			MPI_Finalize(); // exit MPI
-			exit(1);
+	int proc0_size = (range - 1)/procs;	// size of the 0th process
+	if( (proc0_size) < (int) sqrt( (double) range)) {
+		if(rank == 0) {
+			printf("There are currently %d processes.\n", procs);
+			printf("If n = %ld, there must be less than %d processes in order to minimize communication.\n", range, (int)sqrt((double)range));
 		}
+		MPI_Finalize(); // exit MPI
+		exit(0);
 	}
 
-	int first = get_block_lowest(rank, procs, range - 1) + 2;	// gets the first number of the block
-	int last = get_block_highest(rank, procs, range - 1) + 2;	// gets the last number of the block
-	int size = get_block_size(rank, procs, range - 1);		// gets the size of the block
+	long first = get_block_lowest(rank, procs, range - 1) + 2;	// gets the first number of the block
+	long last = get_block_highest(rank, procs, range - 1) + 2;	// gets the last number of the block
+	long size = get_block_size(rank, procs, range - 1);		// gets the size of the block
 
-	printf("(Process %d) %d - %d, size %d\n", rank, first, last, size);
+	printf("(Process %d) %ld - %ld, size %ld\n", rank, first, last, size);
 	fflush(stdout);
 	// parallelizing step 1 of sequential algorithm ----------------------------------
 	// 1. Create a list of natural numbers 2, 3, 4, ... , n, all marked 0
@@ -63,11 +64,13 @@ int main(int argc, char* argv[]) {
 	char* block;
 	block = (char *) malloc (size);
 	if(block == NULL) {
-		printf("Cannot allocate enough memory.\n");
+		if(rank == 0) {
+			printf("Cannot allocate enough memory.\n");
+		}
 		MPI_Finalize();
-		exit(1);
+		exit(0);
 	}
-	int i;
+	long i;
 	for(i=0; i < size; i++) {
 		block[i] = 0;
 	}
@@ -136,16 +139,15 @@ int main(int argc, char* argv[]) {
 
 	if(rank==0) {
 		printf("----------------------------------------\n");
-		printf("Total primes between 2 and %d: %d\n", range, global_prime_count);
+		printf("Total primes between 2 and %ld: %ld\n", range, global_prime_count);
 		printf("Time Elapsed: %f seconds\n\n", elapsed_time);
 	}
 
 	return 0;
 }
 
-
 // ------ Helper Functions ------------------------------------------
-int get_block_lowest(int rank, int procs, int range) {
+long get_block_lowest(int rank, int procs, long range) {
 // Gets the integer that is represented by the first (lowest) index of the block with ID 'rank'
 // 	 Parameters: rank - an integer representing the rank of the process
 //               procs - an integer representing the number of processes
@@ -154,7 +156,7 @@ int get_block_lowest(int rank, int procs, int range) {
 	return (rank * range)/ procs;
 }
 
-int get_block_highest(int rank, int procs, int range) {
+long get_block_highest(int rank, int procs, long range) {
 // Gets the integer that is represented by the last (highest) index of the block with ID 'rank'
 // 	 Parameters: rank - an integer representing the rank of the process
 //               procs - an integer representing the number of processes
@@ -163,7 +165,7 @@ int get_block_highest(int rank, int procs, int range) {
 	return (((rank + 1) * range) / procs) - 1;
 }
 
-int get_block_size(int rank, int procs, int range) {
+long get_block_size(int rank, int procs, long range) {
 // Gets the size of the block with ID 'rank'
 // 	 Parameters: rank - an integer representing the rank of the process
 //               procs - an integer representing the number of processes
@@ -172,6 +174,6 @@ int get_block_size(int rank, int procs, int range) {
 	return get_block_highest(rank,procs,range) - get_block_lowest(rank,procs,range) + 1;
 }
 
-// int get_block_owner(int ind, int procs, int range) {
+// int get_block_owner(int ind, int procs, long range) {
 // 	return (procs * (ind + 1) - 1) / range;
 // }
