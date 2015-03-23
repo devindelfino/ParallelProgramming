@@ -53,6 +53,7 @@ To run executable with no parameters...
 
 *Defaults to:*
 *Number of processes = Number of CPU cores*
+
 *Maximum number of the sieve = 100 (finds primes between 2 and 100)*
 
 To run executable with parameters...
@@ -60,6 +61,7 @@ To run executable with parameters...
 	mpirun -np P parallel_sieve N
 
 *Number of processes = __P__*
+
 *Maximum number of the sieve = __N__ (finds primes between 2 and n, inclusive)*
 
 To remove all of the executable files (required before recompiling code after changes are made)
