@@ -8,7 +8,7 @@
  * File Contents: Implementation of a parallel algorithm for the Sieve of Eratosthenes with various modifications for
  *                better efficiency. This implementation takes half of the storage of the original parallel algorithm by
  * 				  removing all even numbers from the sieve. Also, it removes the broadcasting step and reorders the sieve
- *                loops for speed.
+ *                loops for speed. My modifications yield accurate results, but don't yield a more efficient algorithm for some reason.
  *				         
  */
 

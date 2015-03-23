@@ -46,16 +46,10 @@ To remove all executable files (required before recompiling code after changes a
 To compile code...
 
 	make parallel_sieve
-or
-
-	make parallel_MOD
 
 To run executable with no parameters...
 
 	mpirun parallel_sieve 
-or
-
-	mpirun parallel_MOD
 
 *Defaults to:*
 *Number of processes = Number of CPU cores*
@@ -64,9 +58,6 @@ or
 To run executable with parameters...
 		     
 	mpirun -np P parallel_sieve N
-or
-	
-	mpirun -np P parallel_MOD N
 
 *Number of processes = __P__*
 *Maximum number of the sieve = __N__ (finds primes between 2 and n, inclusive)*
@@ -89,6 +80,7 @@ The *sieve_of_eratosthenes* directory of the *ParallelProgramming* repository co
 
 * *sieve_seq.c* - A sequential implementation of the sieve of eratosthenes algorithm
 * *sieve_par.c* - A parallel implementation of the sieve of eratosthenes algorithm
+* *sieve_par_MOD.c* - A parallel implementation with a few modifications to the algorithm (no broadcast, only considers odd values, reorders loops)
 
 References
 ----------
