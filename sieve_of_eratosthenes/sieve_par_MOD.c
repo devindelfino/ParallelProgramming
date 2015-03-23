@@ -146,21 +146,22 @@ int main(int argc, char* argv[]) {
 
 	local_prime_count = 0;
 
-	if(rank == 0) {
-		local_prime_count++; // for the prime '2'
-		#ifndef DONT_PRINT
-			printf("(%d) 2\n", rank);
-			fflush(stdout);
-		#endif
-	}
-
-	for(it = 1; it < size; it++) {
-		if(block[it] == 0 ) {
-			local_prime_count++;
+	for(it = 0; it < size; it++) {
+		if(it == 0 && rank == 0) {
+			local_prime_count++; // for the prime '2'
 			#ifndef DONT_PRINT
-				printf("(%d) %ld\n", rank, first + (it*2));
+				printf("(%d) 2\n", rank);
 				fflush(stdout);
 			#endif
+		}
+		else {
+			if(block[it] == 0 ) {
+				local_prime_count++;
+				#ifndef DONT_PRINT
+					printf("(%d) %ld\n", rank, first + (it*2));
+					fflush(stdout);
+				#endif
+			}
 		}
 	}
 
