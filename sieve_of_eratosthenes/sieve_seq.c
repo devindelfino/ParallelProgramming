@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+// #define DONT_PRINT
 
 
 int main(int argc, char* argv[]) {
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]) {
 			prime_list[mark] = 1;
 		}
 
-		for(it = current_prime-2+1; current_prime < upper_bound-1; it++) {
+		for(it = current_prime-2+1; it < upper_bound-1; it++) {
 			if(prime_list[it] == 0) {
 				current_prime = it+2;
 				break;
@@ -58,7 +59,9 @@ int main(int argc, char* argv[]) {
 	for(it=0; it < upper_bound-1; it++){
 		if(prime_list[it] == 0) {
 			prime_count++;
-			// printf("%d\n", it+2);
+			#ifndef DONT_PRINT
+				printf("%d\n", it+2);
+			#endif
 		}	
 	}
 

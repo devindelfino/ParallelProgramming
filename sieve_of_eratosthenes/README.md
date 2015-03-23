@@ -46,10 +46,16 @@ To remove all executable files (required before recompiling code after changes a
 To compile code...
 
 	make parallel_sieve
+or
+
+	make parallel_MOD
 
 To run executable with no parameters...
 
 	mpirun parallel_sieve 
+or
+
+	mpirun parallel_MOD
 
 *Defaults to:*
 *Number of processes = Number of CPU cores*
@@ -58,6 +64,9 @@ To run executable with no parameters...
 To run executable with parameters...
 		     
 	mpirun -np P parallel_sieve N
+or
+	
+	mpirun -np P parallel_MOD N
 
 *Number of processes = __P__*
 *Maximum number of the sieve = __N__ (finds primes between 2 and n, inclusive)*

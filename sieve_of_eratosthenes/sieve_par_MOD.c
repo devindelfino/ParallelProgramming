@@ -3,10 +3,13 @@
  *
  * Author: Devin Delfino
  *
- * File Name: sieve_par.c
+ * File Name: sieve_par_MOD.c
  *
- * File Contents: Implementation of a parallel algorithm for the Sieve of Eratosthenes using MPI for the
- *                message passing system. This is a direct parallelized version of the sequential algorithm.         
+ * File Contents: Implementation of a parallel algorithm for the Sieve of Eratosthenes with various modifications for
+ *                better efficiency. This implementation takes half of the storage of the original parallel algorithm by
+ * 				  removing all even numbers from the sieve. Also, it removes the broadcasting step and reorders the sieve
+ *                loops for speed.
+ *				         
  */
 
 #include <mpi.h>
@@ -14,15 +17,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#define DONT_PRINT
+// #define DONT_PRINT
 
 int main(int argc, char* argv[]) {
 	int procs;		// the number of processes
 	int rank;		// the rank of a given process
 	long range = 100;		// the upper bound of the range to find primes (2 to range)
+	long sieve_size;
 	double elapsed_time;
 	int local_prime_count;
-	long global_prime_count = 0;
+	long global_prime_count = 0; // start with 1 to account for the prime '2'
 
 	MPI_Init(&argc, &argv);		// Initialize MPI, breaks into child processes -----------------------------------
 
@@ -42,25 +46,19 @@ int main(int argc, char* argv[]) {
 	MPI_Barrier(MPI_COMM_WORLD);
 	elapsed_time = MPI_Wtime();
 
-	// checks for too many processes - this will result in a higher need for communication, decreasing efficiency
-	int proc0_size = (range - 1)/procs;	// size of the 0th process
-	if( (proc0_size) < (int) sqrt( (double) range)) {
-		if(rank == 0) {
-			printf("There are currently %d processes.\n", procs);
-			printf("If n = %ld, there must be less than %d processes in order to minimize communication.\n", range, (int)sqrt((double)range));
-		}
-		MPI_Finalize(); // exit MPI
-		exit(0);
-	}
+	// ================ MOD ================
+	// removing all of the even numbers
+	sieve_size = ((range-1) / 2) + 1;
+	// ================ MOD ================
 
-	long first = get_block_lowest(rank, procs, range - 1) + 2;	// gets the first number of the block
-	long last = get_block_highest(rank, procs, range - 1) + 2;	// gets the last number of the block
-	long size = get_block_size(rank, procs, range - 1);		// gets the size of the block
+	// ================ MOD ================
+	long first = get_block_lowest(rank, procs, sieve_size) * 2 + 1;	// gets the first number of the block
+	long last = get_block_highest(rank, procs, sieve_size) * 2 + 1;	// gets the last number of the block
+	long size = get_block_size(rank, procs, sieve_size);		// gets the size of the block
+	// ================ MOD ================
 
 	printf("(Process %d) %ld - %ld, size %ld\n", rank, first, last, size);
 	fflush(stdout);
-	// parallelizing step 1 of sequential algorithm ----------------------------------
-	// 1. Create a list of natural numbers 2, 3, 4, ... , n, all marked 0
 
 	char* block;
 	block = (char *) malloc (size);
@@ -76,59 +74,91 @@ int main(int argc, char* argv[]) {
 		block[i] = 0;
 	}
 
-	// parallelizing step 2 of sequential algorithm ----------------------------------
-	// 2. Set k = 2, the first unmarked number on the list 
-	int current_prime = 2;
-	int current_squared = 4;
-	
-	// parallelizing step 3a of sequential algorithm ----------------------------------
-	// 3a. Mark all multiples of k between k^2 and n
+	// ================ MOD ================
+	// sequential algorithm finding primes between 3 and sqrt(n)
+	// given index, actual number = 2 * index + 3
+	// given actual number, index = actual number - 3 / 2
+	long sqrt_n = (int) sqrt( (double) range);
+	char* prime_list;
 
-	// Repeat until k^2 > n
-	int multiple;	// the local index indicating the first multiple of the current prime in the block
-	int rem;		// the remainder of first % current_prime
-	int mark, it;   // iterators
-	while(current_squared <= range+1) {
-		// iterate through the block
-		if(current_squared <= first) { // k^2 already occurred, so we just mark the first multiple of the current prime
-			rem = first % current_prime;
-			if(rem == 0) {
-				multiple = 0;
-			}
-			else { // rem > 0
-				multiple = current_prime - rem;
-			}
-		}
-		else { // current_squared > first, meaning we start marking at k^2
-			multiple = current_squared - first;
+	prime_list = (char *) malloc (sqrt_n - 2);
+	if(prime_list == NULL) {
+		printf("Cannot allocate enough memory.\n");
+		exit(1);
+	}
+
+	for(i=0; i < sqrt_n-2; i++) {
+		prime_list[i] = 0;
+	}
+
+	int current_prime = 3;
+	int current_squared = 9;
+	int mark, it;
+	while(current_squared <= sqrt_n) {
+		for(mark = (current_squared-3)/2; mark < sqrt_n-2; mark += current_prime) {
+			prime_list[mark] = 1;
 		}
 
-		// set the first mark to the first multiple of the current prime and increase by the current prime
-		
-		for(mark = multiple; mark < size; mark += current_prime) {
-			block[mark] = 1;
-		}
-
-		if(rank == 0) {
-			for(it = current_prime-2+1; it < size; it++) {
-				if(block[it] == 0) {
-					current_prime = it + 2;
-					break;
-				}
+		for(it = ((current_prime-3)/2)+1; it < sqrt_n-2; it++) {
+			if(prime_list[it] == 0) {
+				current_prime = (it*2)+3;
+				break;
 			}
 		}
-
-		MPI_Bcast(&current_prime, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
 		current_squared = current_prime * current_prime;
 	}
 
+	// ================ MOD ================
+
+	// ================ MOD ================
+	// reorganizing inner and outer loops to improve cache hit rate
+	// given index, actual number = first + index * 2
+	// given actual number, index = 
+	long number;
+	long start = 0;
+	if(rank == 0) {
+		start = 1;
+	}
+
+	// iterate through each number in the block
+	for(mark = start; mark < size; mark++) {
+		number = first + (mark * 2);
+		current_prime = 3;
+		current_squared = 9;
+		while(current_squared <= range+1) {
+
+			if((number % current_prime == 0) && (number >= current_squared)) { // if number at index mark is a multiple of current prime and greater than the square of the current prime
+				block[mark] = 1; // mark as composite and break out of while loop to move on to next element in block
+				break;
+			}
+			
+			// if number is not composite, find next prime
+			for(it = ((current_prime-3)/2)+1; it < sqrt_n-2; it++) {
+				if(prime_list[it] == 0) {
+					current_prime = (it*2)+3;
+					break;
+				}
+			}
+			current_squared = current_prime * current_prime;
+		}
+	}
+	// ================ MOD ================
+
 	local_prime_count = 0;
-	for(it = 0; it < size; it++) {
+
+	if(rank == 0) {
+		local_prime_count++; // for the prime '2'
+		#ifndef DONT_PRINT
+			printf("(%d) 2\n", rank);
+			fflush(stdout);
+		#endif
+	}
+
+	for(it = 1; it < size; it++) {
 		if(block[it] == 0 ) {
 			local_prime_count++;
 			#ifndef DONT_PRINT
-				printf("(%d) %ld\n", rank, first + it);
+				printf("(%d) %ld\n", rank, first + (it*2));
 				fflush(stdout);
 			#endif
 		}
@@ -156,7 +186,7 @@ long get_block_lowest(int rank, int procs, long range) {
 //               procs - an integer representing the number of processes
 //               range - an integer representing the maximum number of the sieve
 //   Returns: integer that is represented by the lowest index of the block
-	return (rank * range) / procs;
+	return (rank * range)/ procs;
 }
 
 long get_block_highest(int rank, int procs, long range) {
