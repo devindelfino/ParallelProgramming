@@ -69,10 +69,10 @@ To remove all of the executable files (required before recompiling code after ch
 Complexity Analysis
 -------------------
 __Sequential Algorithm__
-
+O(n log( log( n ) ) )
 
 __Parallel Algorithm__
-
+O( X (n log log n) / p + (sqrt(n)/log sqrt(n)) Y ceil(log p) )
 
 Contents
 --------
