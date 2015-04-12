@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
 	clock_t start, stop;
  
 	if(argc > 1) {
-		upper_bound = atoi(argv[1]);
+		upper_bound = atol(argv[1]);
 		// printf("%d\n",atoi(argv[1]));
 	}
 	

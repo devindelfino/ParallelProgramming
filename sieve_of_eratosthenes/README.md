@@ -94,7 +94,7 @@ Notes
 
 Parallel Algorithm Design (Reference 1, Chapter 3)
 --------------------------------------------------
-* The task/channel model represetns a parallel computation as a set of tass that may interact with each other by sending messages through channels
+* The task/channel model represents a parallel computation as a set of tasks that may interact with each other by sending messages through channels
 * A task is a program, its local memory, and a collection of I/O ports
 * A channel is a message queue that connects one task's output port with another task's input port
 * Binomial trees are the most common communication pattern in parallel algorithm design

@@ -27,8 +27,7 @@ int main(int argc, char* argv[]) {
 	MPI_Init(&argc, &argv);		// Initialize MPI, breaks into child processes -----------------------------------
 
 	if(argc > 1) {
-		range = atoi(argv[1]);
-	}
+		range = atol(argv[1]); }
 
 	// declare helper functions so they are accessible by each process
 	long get_block_lowest(int,int,long);
